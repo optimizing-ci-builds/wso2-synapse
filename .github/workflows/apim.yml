@@ -4,26 +4,34 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
+    - run: touch starting_build_CheckoutSynapse_10
     - name: Checkout Synapse
       uses: actions/checkout@v1
+    - run: touch starting_build_SetupJDK1.8_12
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - run: touch starting_build_BuildSynapsewithMaven_16
     - name: Build Synapse with Maven
       run: mvn clean install --file pom.xml
+    - run: touch starting_build_Getsynapseversion_18
     - name: Get synapse version
       run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout > ../SYNAPSE_VERSION_FILE
+    - run: touch starting_build_Printsynapseversion_20
     - name: Print synapse version
       run: |
         echo $(cat ../SYNAPSE_VERSION_FILE)
+    - run: touch starting_build_CheckoutAPIM_23
     - name: Checkout APIM
       uses: actions/checkout@v1
       with: 
         repository: wso2/product-apim
         ref: refs/heads/master
+    - run: touch starting_build_BuildAPIMwithMaven_28
     - name: Build APIM with Maven
       run: mvn clean install -Dsynapse.version=$(cat ../SYNAPSE_VERSION_FILE) -DskipTests -fae --file ../product-apim/pom.xml
+
