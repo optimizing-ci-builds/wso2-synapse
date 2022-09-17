@@ -4,32 +4,41 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
+    - run: touch starting_build_CheckoutSynapse_10
     - name: Checkout Synapse
       uses: actions/checkout@v1
+    - run: touch starting_build_SetupJDK1.8_12
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - run: touch starting_build_CacheMavenpackages_16
     - name: Cache Maven packages
       uses: actions/cache@v2
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2
         restore-keys: ${{ runner.os }}-m2
+    - run: touch starting_build_BuildSynapsewithMaven_22
     - name: Build Synapse with Maven
       run: mvn clean install --file pom.xml
+    - run: touch starting_build_Getsynapseversion_24
     - name: Get synapse version
       run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout > ../SYNAPSE_VERSION_FILE
+    - run: touch starting_build_Printsynapseversion_26
     - name: Print synapse version
       run: |
         echo $(cat ../SYNAPSE_VERSION_FILE)
+    - run: touch starting_build_CheckoutMI_29
     - name: Checkout MI
       uses: actions/checkout@v1
       with: 
         repository: wso2/micro-integrator
         ref: refs/heads/master
+    - run: touch starting_build_BuildMIwithMaven_34
     - name: Build MI with Maven
       run: mvn clean install -Dsynapse.version=$(cat ../SYNAPSE_VERSION_FILE) -fae --file ../micro-integrator/pom.xml
+

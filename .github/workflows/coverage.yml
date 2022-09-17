@@ -7,66 +7,82 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
+      - run: touch starting_build_Checkoutmaster_13
       - name: Checkout master
         uses: actions/checkout@v1
+      - run: touch starting_build_SetupJDK1.8_15
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
 
+      - run: touch starting_build_BuildSynapsewithMaven_20
       - name: Build Synapse with Maven
         continue-on-error: true
         run: mvn clean install --file pom.xml
+      - run: touch starting_build_Getsynapseversion_23
       - name: Get synapse version
         run: mvn help:evaluate -Dexpression=project.version -q -DforceStdout > ../SYNAPSE_VERSION_FILE
+      - run: touch starting_build_Printsynapseversion_25
       - name: Print synapse version
         run: |
           echo $(cat ../SYNAPSE_VERSION_FILE)
+      - run: touch starting_build_CheckoutCarbonMediation_28
       - name: Checkout Carbon Mediation
         uses: actions/checkout@v1
         with:
           repository: wso2/carbon-mediation
           ref: refs/heads/master
+      - run: touch starting_build_Buildcarbon-mediationwithMaven_33
       - name: Build carbon-mediation with Maven
         continue-on-error: true
         run: mvn clean install -Dsynapse.version=$(cat ../SYNAPSE_VERSION_FILE) -fae --file ../carbon-mediation/pom.xml
+      - run: touch starting_build_Getcarbon.mediation.version_36
       - name: Get carbon.mediation.version
         run: mvn help:evaluate --file ../carbon-mediation/pom.xml -Dexpression=project.version -q -DforceStdout > ../CARBON_MEDIATION_VERSION_FILE
+      - run: touch starting_build_Printcarbon.mediation.version_38
       - name: Print carbon.mediation.version
         run: |
           echo $(cat ../CARBON_MEDIATION_VERSION_FILE)
+      - run: touch starting_build_CheckoutMicroIntegrator_41
       - name: Checkout Micro Integrator
         uses: actions/checkout@v1
         with:
           repository: wso2/micro-integrator
           ref: refs/heads/master
+      - run: touch starting_build_Buildmicro-integratorwithMaven_46
       - name: Build micro-integrator with Maven
         continue-on-error: true
         run: mvn clean install -Dsynapse.version=$(cat ../SYNAPSE_VERSION_FILE) -Dcarbon.mediation.version=$(cat ../CARBON_MEDIATION_VERSION_FILE) -fae --file ../micro-integrator/pom.xml
 
+      - run: touch starting_build_UploadunittestcoverageofsynapsetoCodecov_50
       - name: Upload unit test coverage of synapse to Codecov
         continue-on-error: true
         uses: codecov/codecov-action@v1.2.1
         with:
           flags: unit_tests,synapse_unit_tests
+      - run: touch starting_build_Uploadunittestcoverageofcarbon.mediationtoCodecov_55
       - name: Upload unit test coverage of carbon.mediation to Codecov
         continue-on-error: true
         uses: codecov/codecov-action@v1.2.1
         with:
           flags: unit_tests,mediation_unit_tests
           directory: ../carbon-mediation/
+      - run: touch starting_build_Uploadunittestcoverageofmicro.integratortoCodecov_61
       - name: Upload unit test coverage of micro.integrator to Codecov
         continue-on-error: true
         uses: codecov/codecov-action@v1.2.1
         with:
           flags: unit_tests,mi_unit_tests
           directory: ../micro-integrator/components/
+      - run: touch starting_build_Uploadintegrationtestcoverageofmicro.integratortoCodecov_67
       - name: Upload integration test coverage of micro.integrator to Codecov
         continue-on-error: true
         uses: codecov/codecov-action@v1.2.1
         with:
           flags: integration_tests
           directory: ../micro-integrator/integration/
+
